@@ -1,15 +1,25 @@
 package com.axe1lyze.floatingscreen;
 
+import android.content.Intent;
+import android.widget.Button;
+import android.widget.EditText;
+
 import com.axe1lyze.floatingscreen.app.FloatingScreenService;
-import com.axe1lyze.floatingscreen.widget.FloatingScreenView;
 
 public class TestFloatingScreen2Service extends FloatingScreenService {
 
 	@Override
-	public FloatingScreenView getContentView() {
-		FloatingScreenView view = new FloatingScreenView(this);
-		view.setBackgroundColor(0xff00ff00);
-		return view ;
+	public FloatingScreenService getSelf(Intent intent) {
+		return this;
 	}
+	
+
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		
+		setContentView(new EditText(this));
+	}
+
 
 }
