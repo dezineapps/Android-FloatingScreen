@@ -11,10 +11,12 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 public class FloatingScreenView extends LinearLayout{
+	
 	private static FloatingScreenView frontFloatingScreenView = null;
 	private WindowManager windowManager;
 	private WindowManager.LayoutParams params;
 	private double statusBarHeight;
+	
 	public WindowManager.LayoutParams getWindowLayoutParams(){
 		return params;
 	}
@@ -27,7 +29,7 @@ public class FloatingScreenView extends LinearLayout{
 		super(context);
 		this.params = params;
 		this.windowManager = (WindowManager) getContext().getSystemService(Service.WINDOW_SERVICE);
-		statusBarHeight = Math.ceil(25 * context.getResources().getDisplayMetrics().density);
+		this.statusBarHeight = Math.ceil(25 * context.getResources().getDisplayMetrics().density);
 	}
 	
 	public void attachToScreen(){

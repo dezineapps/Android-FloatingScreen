@@ -1,2 +1,5 @@
 FloatingScreen
 ==============
+
+
+MIT Licence
