@@ -1,5 +1,0 @@
-FloatingScreen
-==============
-
-
-MIT Licence

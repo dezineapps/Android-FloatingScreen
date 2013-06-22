@@ -1,6 +1,6 @@
-package com.axe1lyze.floatingscreen;
+package com.axe1lyze.android.floatingscreen;
 
-import com.axe1lyze.floatingscreen.app.FloatingScreenService;
+import com.axe1lyze.android.app.FloatingScreenService;
 
 import android.os.Bundle;
 import android.app.Activity;

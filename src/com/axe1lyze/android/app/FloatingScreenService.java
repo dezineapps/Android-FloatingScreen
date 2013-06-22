@@ -1,4 +1,4 @@
-package com.axe1lyze.floatingscreen.app;
+package com.axe1lyze.android.app;
 
 import android.app.Notification;
 import android.app.Service;
@@ -19,6 +19,8 @@ import android.widget.LinearLayout;
 
 public abstract class FloatingScreenService extends Service{
 	public abstract FloatingScreenService getSelf(Intent intent);
+	public abstract int getInitialWidth();
+	public abstract int getInitialHeight();
 	
 	@Override
 	public IBinder onBind(Intent intent) {return new FloatingScreenServiceBinder(getSelf(intent));}
@@ -32,7 +34,7 @@ public abstract class FloatingScreenService extends Service{
 	public void onCreate() {
 		startForeground(1, new Notification());
 		if(inflater==null) inflater = (LayoutInflater)getSystemService(Service.LAYOUT_INFLATER_SERVICE);
-		floatingScreenView = new FloatingScreenView(this);
+		floatingScreenView = new FloatingScreenView(this,getInitialWidth(),getInitialHeight());
 		floatingScreenView.setDrawingCacheEnabled(false);
 		floatingScreenView.attachToScreen();
 	}
@@ -63,12 +65,15 @@ class FloatingScreenView extends LinearLayout{
 	private WindowManager.LayoutParams params;
 	private double statusBarHeight;
 	
+	private FloatingScreenTitleView titleView;
+	private View contentView;
+	
 	public WindowManager.LayoutParams getWindowLayoutParams(){
 		return params;
 	}
 	
-	public FloatingScreenView(Context context) {
-		this(context,getFloatingScreenLayoutParams());
+	public FloatingScreenView(Context context,int width,int height) {
+		this(context,getFloatingScreenLayoutParams(width,height));
 	}
 	
 	public FloatingScreenView(Context context,WindowManager.LayoutParams params) {
@@ -81,7 +86,12 @@ class FloatingScreenView extends LinearLayout{
 	}
 	
 	public void attachToScreen(){
+		if(frontFloatingScreenView!=null){
+			frontFloatingScreenView.clearFocus();
+		}
 		windowManager.addView(this, params);
+		requestFocus();
+		frontFloatingScreenView=this;
 	}
 	
 	public void detachFromScreen(){
@@ -105,19 +115,15 @@ class FloatingScreenView extends LinearLayout{
 			return true;
 		case MotionEvent.ACTION_UP:
 			if(!equals(frontFloatingScreenView)){
-
 				params.flags ^= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-				windowManager.removeView(this);
-				windowManager.addView(this, params);
-				frontFloatingScreenView=this;
-				requestFocus();
+				detachFromScreen();
+				attachToScreen();
 			
 			}
 			break;
 		case MotionEvent.ACTION_OUTSIDE:
 			params.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
 			windowManager.updateViewLayout(this, params);
-			clearFocus();
 			break;
 		default:break;
 		}
@@ -132,15 +138,16 @@ class FloatingScreenView extends LinearLayout{
 	}
 	
 	
-	public static WindowManager.LayoutParams getFloatingScreenLayoutParams(){
+	public static WindowManager.LayoutParams getFloatingScreenLayoutParams(int width,int height){
 		WindowManager.LayoutParams params = new WindowManager.LayoutParams();
-		params.format=PixelFormat.TRANSPARENT;
+		params.format = PixelFormat.TRANSPARENT;
 		params.flags = 	WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL|
 						WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH|
 						WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
 		params.type = WindowManager.LayoutParams.TYPE_PHONE;
 		params.gravity = Gravity.TOP|Gravity.LEFT;
-		params.width=params.height=500;//.LayoutParams.WRAP_CONTENT;
+		params.width = width;
+		params.height = height;//.LayoutParams.WRAP_CONTENT;
 		return params;
 	}
 
